@@ -10,13 +10,14 @@ Original GitHub repositories to reference:
 
 ### Operation Steps:
 1. On the master branch, you will find the code.
-2. When you connect to Bwunicluster with ssh, you will encounter the login interface.
-3. Use the command `salloc -p gpu_4 -n1 --gres=gpu:1 -t 120` for GPU usage (120 minutes), alternatively, `gpu_8` can also be used.
-4. Load the modules with `module load devel/cuda/11.8` and `module load compiler/gnu/12.1` to get CUDA and GNU.
-5. Navigate to the `pytorch_federated_learning` workspace and execute `python fl_main.py --config "./config/test_config.yaml"` to start training the Neural Networks on the ChestXray dataset.
-6. Further details can be found in the `test_config.yaml` file. Ensure the dataset folder is in the same directory as `pytorch_federated_learning`.
-7. After running the python command, the heatmap of the client part neural networks will be stored in the `figures` folder within `pytorch_federated_learning`.
-8. After training the neural networks, execute `python postprocessing/eval_main.py -rr 'results'` to store the performance results in the `figures` folder.
+2. here:https://www.kaggle.com/datasets/ashery/chexpert/data  download the datasets
+3. When you connect to Bwunicluster with ssh, you will encounter the login interface.
+4. Use the command `salloc -p gpu_4 -n1 --gres=gpu:1 -t 120` for GPU usage (120 minutes), alternatively, `gpu_8` can also be used.
+5. Load the modules with `module load devel/cuda/11.8` and `module load compiler/gnu/12.1` to get CUDA and GNU.
+6. Navigate to the `pytorch_federated_learning` workspace and execute `python fl_main.py --config "./config/test_config.yaml"` to start training the Neural Networks on the ChestXray dataset.
+7. Further details can be found in the `test_config.yaml` file. Ensure the dataset folder is in the same directory as `pytorch_federated_learning`.
+8. After running the python command, the heatmap of the client part neural networks will be stored in the `figures` folder within `pytorch_federated_learning`.
+9. After training the neural networks, execute `python postprocessing/eval_main.py -rr 'results'` to store the performance results in the `figures` folder.
 
 ### Attention
 #### Issues Not Solved
