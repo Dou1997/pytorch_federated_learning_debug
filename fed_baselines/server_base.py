@@ -65,11 +65,15 @@ class FedServer(object):
                 b_y = y.to(self._device)  # Tensor on GPU
 
                 test_output = self.model(b_x)
-                pred_y = torch.max(test_output, 1)[1].to(self._device).data.squeeze()
-                accuracy_collector = accuracy_collector + sum(pred_y == b_y)
-        accuracy = accuracy_collector / len(self.testset)
+                # Apply a threshold to the model output
+                pred_y = (torch.sigmoid(test_output) > 0.5).float()
 
-        return accuracy.cpu().numpy()
+                accuracy_collector = accuracy_collector + (pred_y == b_y.float()).sum().item()
+                #pred_y = torch.max(test_output, 1)[1].to(self._device).data.squeeze()
+                #accuracy_collector = accuracy_collector + sum(pred_y == b_y)
+        accuracy = accuracy_collector / (len(self.testset) * self._num_class)  # Modified to take into account multiple classes
+
+        return accuracy
 
     def select_clients(self, connection_ratio=1):
         """

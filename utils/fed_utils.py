@@ -27,6 +27,12 @@ def assign_dataset(dataset_name):
         num_class = 27
         image_dim = 28
         image_channel = 1
+    
+    elif dataset_name == "ChestXrays":
+        num_class = 5
+        image_size = 224
+        image_channel = 1  # Change from 3 to 1
+
 
     elif dataset_name == 'CIFAR10':
 

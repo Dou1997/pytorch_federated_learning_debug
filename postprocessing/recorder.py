@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import json
 from json import JSONEncoder
 import pickle
+import yaml
 
 json_types = (list, dict, str, int, float, bool, type(None))
 
@@ -42,8 +43,10 @@ class Recorder(object):
         """
         fig, axes = plt.subplots(2)
         for i, (res, label) in enumerate(self.res_list):
-            axes[0].plot(np.array(res['server']['iid_accuracy']), label=label, alpha=1, linewidth=2)
-            axes[1].plot(np.array(res['server']['train_loss']), label=label, alpha=1, linewidth=2)
+            #axes[0].plot(np.array(res['server']['iid_accuracy']), label=label, alpha=1, linewidth=2)
+            #axes[1].plot(np.array(res['server']['train_loss']), label=label, alpha=1, linewidth=2)
+            axes[0].plot(np.array(res['server']['iid_accuracy']), label=fed_algo, alpha=1, linewidth=2)
+            axes[1].plot(np.array(res['server']['train_loss']), label=fed_algo, alpha=1, linewidth=2)
 
         for i, ax in enumerate(axes):
             ax.set_xlabel('# of Epochs', size=12)
@@ -56,3 +59,12 @@ class Recorder(object):
             ax.grid()
 
 
+        # Read the config file and extract the fed_algo value
+        with open("config/test_config.yaml", 'r') as config_file:
+            config = yaml.safe_load(config_file)
+            fed_algo = config['client'].get('fed_algo', 'default_algo')
+
+        # Save the plot to the figures directory with the fed_algo value in the filename
+        output_file = f"figures/plot_{fed_algo}.png"
+        plt.savefig(output_file)
+        print(f"Plot saved to {output_file}")

@@ -1,14 +1,14 @@
 system:
-  num_client: 100
-  num_local_class: 2
-  dataset: "MNIST"
-  model: "LeNet"
+  num_client: 5
+  num_local_class: 5
+  dataset: "ChestXrays"
+  model: "ResNet50"
   i_seed: 235235
-  num_round: 2000
+  num_round: 1
   res_root: "results"
 
 client:
-  fed_algo: "FedAvg"
+  fed_algo: "FedProx"
   lr: 0.01
   batch_size: 64
   num_local_epoch: 3

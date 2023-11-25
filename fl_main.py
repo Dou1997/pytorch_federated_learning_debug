@@ -8,6 +8,8 @@ import yaml
 from json import JSONEncoder
 from tqdm import tqdm
 
+from preprocessing.baselines_dataloader import load_data, ChestXrayDataset
+
 from fed_baselines.client_base import FedClient
 from fed_baselines.client_fedprox import FedProxClient
 from fed_baselines.client_scaffold import ScaffoldClient
@@ -47,7 +49,15 @@ def fed_args():
 
     args = parser.parse_args()
     return args
-    
+
+diseases = ["Cardiomegaly", "Pleural_Effusion", "Edema", "Atelectasis", "Consolidation"]
+#check target_tensor = ooooo the result are none add a print to check the labels  print target sensor then labels
+def decode_target(target_tensor):
+    print("Input target_tensor:", target_tensor)
+    disease_indices = target_tensor.nonzero(as_tuple=False)
+    labels = [diseases[idx] for idx in disease_indices]
+    print("labels:", labels)
+    return labels 
 
 def fed_run():
     """
@@ -63,7 +73,7 @@ def fed_run():
     algo_list = ["FedAvg", "SCAFFOLD", "FedProx", "FedNova"]
     assert config["client"]["fed_algo"] in algo_list, "The federated learning algorithm is not supported"
 
-    dataset_list = ['MNIST', 'CIFAR10', 'FashionMNIST', 'SVHN', 'CIFAR100']
+    dataset_list = ['MNIST', 'CIFAR10', 'FashionMNIST', 'SVHN', 'CIFAR100','ChestXrays']
     assert config["system"]["dataset"] in dataset_list, "The dataset is not supported"
 
     model_list = ["LeNet", 'AlexCifarNet', "ResNet18", "ResNet34", "ResNet50", "ResNet101", "ResNet152", "CNN"]
@@ -141,6 +151,16 @@ def fed_run():
         # Testing and flushing
         accuracy = fed_server.test()
         fed_server.flush()
+
+        #save heatmap
+        trainset, testset, original_set, len_classes = load_data('ChestXrays')
+        #client_dict = {client_id: FedClient() for client_id in trainset_config['users']}
+        client_dict = {client_id: FedClient(client_id, dataset_id=config["system"]["dataset"], epoch=config["client"]["num_local_epoch"], model_name=config["system"]["model"]) for client_id in trainset_config['users']}
+        original_image, target = random.choice(original_set) # might need to change to some specific image with postive target 
+        decoded_labels = decode_target(target)
+        for client_id in trainset_config['users']:
+            client_dict[client_id].generate_and_save_heatmap(client_id, decoded_labels, original_image, target)
+
 
         # Record the results
         recorder.res['server']['iid_accuracy'].append(accuracy)
